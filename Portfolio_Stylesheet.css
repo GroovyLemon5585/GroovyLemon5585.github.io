@@ -21,6 +21,7 @@ body {
 .cover-content {
     text-align: center;
     color: #ecf0f1;
+    margin: 5px;
 }
 
 .cover-content h1 {
@@ -35,6 +36,14 @@ body {
     color: #95a5a6;
     margin: 0;
     letter-spacing: 1px;
+}
+
+.cover-intro {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #bdc3c7;
+    margin: 1rem auto 0;
+    max-width: 640px;
 }
 
 /* Animated scroll cue */
