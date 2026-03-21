@@ -1,0 +1,50 @@
+/* General body styling */
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: Arial, sans-serif;
+}
+
+/* Main content area */
+h1 {
+    flex: 1;
+    padding: 20px;
+}
+
+/* Footer bar styling */
+.footer-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: #2c3e50;
+    padding: 15px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer icon styling */
+.footer-icon {
+    color: #ecf0f1;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.footer-icon:hover {
+    color: #3498db;
+    transform: scale(1.1);
+}
+
+.footer-icon svg {
+    width: 24px;
+    height: 24px;
+}
