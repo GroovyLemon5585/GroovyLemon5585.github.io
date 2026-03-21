@@ -2,16 +2,135 @@
 body {
     margin: 0;
     padding: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
     font-family: Arial, sans-serif;
+    overflow-x: hidden;
 }
 
-/* Main content area */
-h1 {
-    flex: 1;
-    padding: 20px;
+/* ─── COVER / HERO SECTION ─────────────────────────────────────────────────── */
+#cover {
+    position: relative;
+    height: 100vh;
+    background-color: #0d1117;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.cover-content {
+    text-align: center;
+    color: #ecf0f1;
+}
+
+.cover-content h1 {
+    font-size: 3.5rem;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.cover-subtitle {
+    font-size: 1.2rem;
+    color: #95a5a6;
+    margin: 0;
+    letter-spacing: 1px;
+}
+
+/* Animated scroll cue */
+.scroll-indicator {
+    position: fixed;
+    bottom: 88px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 28px;
+    height: 48px;
+    border: 2px solid rgba(236, 240, 241, 0.6);
+    border-radius: 14px;
+    display: flex;
+    justify-content: center;
+    padding-top: 8px;
+    box-sizing: border-box;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+    z-index: 20;
+}
+
+.scroll-indicator.is-hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.scroll-indicator span {
+    width: 4px;
+    height: 8px;
+    background-color: #ecf0f1;
+    border-radius: 2px;
+    animation: scrollBounce 1.6s ease-in-out infinite;
+}
+
+@keyframes scrollBounce {
+    0%, 100% { transform: translateY(0);    opacity: 1; }
+    50%       { transform: translateY(14px); opacity: 0.2; }
+}
+
+/* ─── PARALLAX SECTIONS ─────────────────────────────────────────────────────
+   To swap in a real photo, replace the gradient() with:
+     linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/photo.jpg')
+   ──────────────────────────────────────────────────────────────────────────── */
+.parallax-section {
+    height: 100vh;
+    background-size: cover;
+    background-position: center 50%;  /* JS updates the Y value on scroll */
+    background-repeat: no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#parallax-1 {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+#parallax-2 {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        linear-gradient(135deg, #0f3460 0%, #533483 50%, #e94560 100%);
+}
+
+#parallax-3 {
+    background-image:
+        linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+        linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+}
+
+/* Content card inside each parallax section */
+.parallax-content {
+    text-align: center;
+    color: #ecf0f1;
+    padding: 48px 60px;
+    background-color: rgba(0, 0, 0, 0.35);
+    border-radius: 8px;
+    backdrop-filter: blur(6px);
+    max-width: 640px;
+}
+
+.parallax-content h2 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem 0;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+}
+
+.parallax-content p {
+    font-size: 1.1rem;
+    line-height: 1.8;
+    color: #bdc3c7;
+    margin: 0;
 }
 
 /* Footer bar styling */
@@ -47,4 +166,60 @@ h1 {
 .footer-icon svg {
     width: 24px;
     height: 24px;
+}
+
+.email-card {
+    position: fixed;
+    right: 24px;
+    bottom: 84px;
+    min-width: 280px;
+    padding: 18px 20px 16px;
+    border-radius: 14px;
+    background: rgba(13, 17, 23, 0.94);
+    border: 1px solid rgba(236, 240, 241, 0.12);
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.35);
+    color: #ecf0f1;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(16px);
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s ease;
+    z-index: 30;
+}
+
+.email-card.is-open {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.email-card-close {
+    position: absolute;
+    top: 8px;
+    right: 10px;
+    border: 0;
+    background: transparent;
+    color: #95a5a6;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0;
+}
+
+.email-card-close:hover {
+    color: #ecf0f1;
+}
+
+.email-card-label {
+    margin: 0 0 6px;
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #95a5a6;
+}
+
+.email-card-address {
+    margin: 0;
+    font-size: 1rem;
+    color: #ecf0f1;
+    word-break: break-word;
 }
