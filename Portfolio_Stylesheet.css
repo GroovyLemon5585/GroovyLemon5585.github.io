@@ -102,19 +102,19 @@ body {
 #parallax-1 {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-        linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    linear-gradient(135deg, #2b0a12 0%, #7a1f2b 50%, #d46a2a 100%);
 }
 
 #parallax-2 {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-        linear-gradient(135deg, #0f3460 0%, #533483 50%, #e94560 100%);
+        linear-gradient(135deg, #013414 0%, #40713e 50%, #1e9c13 100%);
 }
 
 #parallax-3 {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-        linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    linear-gradient(135deg, #16163a 0%, #303f9f 50%, #6a4fbf 100%);
 }
 
 /* Content card inside each parallax section */
