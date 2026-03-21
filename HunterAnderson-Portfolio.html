@@ -69,18 +69,18 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var sections = document.querySelectorAll('.parallax-section');
-            var scrollIndicator = document.querySelector('.scroll-indicator');
-            var scrollIndicatorTimer;
-            var gmailTrigger = document.getElementById('gmail-trigger');
-            var emailCard = document.getElementById('email-card');
-            var emailCardClose = document.getElementById('email-card-close');
+            const sections = document.querySelectorAll('.parallax-section');
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            let scrollIndicatorTimer;
+            const gmailTrigger = document.getElementById('gmail-trigger');
+            const emailCard = document.getElementById('email-card');
+            const emailCardClose = document.getElementById('email-card-close');
 
             function updateParallax() {
-                var scrollY = window.pageYOffset;
+                const scrollY = window.pageYOffset;
                 sections.forEach(function (section) {
-                    var sectionTop = section.offsetTop;
-                    var offset = (scrollY - sectionTop) * 0.4;
+                    const sectionTop = section.offsetTop;
+                    const offset = (scrollY - sectionTop) * 0.4;
                     section.style.backgroundPositionY = 'calc(50% + ' + offset + 'px)';
                 });
             }
