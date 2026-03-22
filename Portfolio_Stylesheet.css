@@ -105,6 +105,13 @@ body {
     linear-gradient(135deg, #2b0a12 0%, #7a1f2b 50%, #d46a2a 100%);
 }
 
+#parallax-1.gallery-open {
+    height: auto;
+    min-height: 180vh;
+    align-items: flex-start;
+    padding: 70px 0;
+}
+
 #parallax-2 {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
@@ -140,6 +147,72 @@ body {
     line-height: 1.8;
     color: #bdc3c7;
     margin: 0;
+}
+
+.portfolio-gallery-card {
+    width: min(2200px, 99vw);
+}
+
+.portfolio-gallery-card h2 {
+    margin-bottom: 1.5rem;
+}
+
+.photos-toggle {
+    border: 1px solid rgba(236, 240, 241, 0.45);
+    background: rgba(13, 17, 23, 0.8);
+    color: #ecf0f1;
+    font-size: 1rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.2s ease;
+    margin-bottom: 1.5rem;
+}
+
+.photos-toggle:hover {
+    background: rgba(236, 240, 241, 0.14);
+    transform: translateY(-1px);
+}
+
+.portfolio-gallery {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 22px;
+}
+
+.portfolio-gallery.is-hidden {
+    display: none;
+}
+
+.portfolio-image {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 0;
+    border: 1px solid rgba(236, 240, 241, 0.25);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+}
+
+@media (max-width: 900px) {
+    .portfolio-gallery {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 640px) {
+    .portfolio-gallery {
+        grid-template-columns: 1fr;
+    }
+
+    #parallax-1.gallery-open {
+        min-height: 120vh;
+        padding: 26px 0;
+    }
+
+    .portfolio-gallery-card {
+        padding: 26px 20px;
+    }
 }
 
 /* Footer bar styling */
