@@ -20,6 +20,7 @@
     <section id="cover">
         <div class="cover-content">
             <h1>Hunter Anderson</h1>
+            <img src="images/hunter-headshot.png" alt="Photo of Hunter Anderson" class="cover-headshot">
             <p class="cover-subtitle">Game Developer &amp; Artist</p>
             <p class="cover-intro">My name is Hunter Anderson, and I am currently a student in the GIMM program at Boise
                 State University, in the College of Arts &amp; Sciences, and I am an aspiring environment artist. This
@@ -38,6 +39,7 @@
             background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/your-image.jpg');
     -->
     <div class="parallax-section" id="parallax-1">
+        <div class="cube-overlay" id="cube-overlay" aria-hidden="true"></div>
         <div class="parallax-content portfolio-gallery-card">
             <h2>ChatGPT Terrarium Form Webpage.</h2>
             <br>
@@ -125,6 +127,8 @@
             const photosToggles = document.querySelectorAll('.photos-toggle');
             const portfolioGalleries = document.querySelectorAll('.portfolio-gallery');
             const parallaxOne = document.getElementById('parallax-1');
+            const cubeOverlay = document.getElementById('cube-overlay');
+            let cubeTiles = [];
 
             function updateParallax() {
                 const scrollY = window.pageYOffset;
@@ -182,6 +186,82 @@
                 });
 
                 parallaxOne.classList.toggle('gallery-open', hasVisibleGallery);
+
+                window.requestAnimationFrame(buildCubeOverlay);
+            }
+
+            function buildCubeOverlay() {
+                if (!parallaxOne || !cubeOverlay) {
+                    return;
+                }
+
+                const width = parallaxOne.clientWidth;
+                const height = parallaxOne.clientHeight;
+                const cubeSize = Math.max(38, Math.min(56, Math.round(width / 24)));
+                const gap = 30;
+                const stepX = cubeSize + gap;
+                const stepY = cubeSize + gap;
+                const startX = -cubeSize;
+                const startY = -cubeSize;
+                const tiles = [];
+                let markup = '';
+
+                for (let y = startY; y < height + cubeSize * 2; y += stepY) {
+                    for (let x = startX; x < width + cubeSize * 2; x += stepX) {
+                        tiles.push({ x: x, y: y });
+                        markup += '<div class="cube-tile" style="--cube-size: ' + cubeSize + 'px; --cube-x: ' + x + 'px; --cube-y: ' + y + 'px; --cube-rotate-x: 0deg; --cube-rotate-y: 0deg; --cube-rotate-z: 0deg; --cube-lift: 0px;"></div>';
+                    }
+                }
+
+                cubeOverlay.innerHTML = markup;
+                cubeTiles = Array.from(cubeOverlay.querySelectorAll('.cube-tile')).map(function (tile, index) {
+                    return {
+                        element: tile,
+                        x: tiles[index].x + cubeSize / 2,
+                        y: tiles[index].y + cubeSize / 2
+                    };
+                });
+            }
+
+            function updateCubeTilt(event) {
+                if (!parallaxOne || cubeTiles.length === 0) {
+                    return;
+                }
+
+                const bounds = parallaxOne.getBoundingClientRect();
+                const cursorX = event.clientX - bounds.left;
+                const cursorY = event.clientY - bounds.top;
+
+                cubeTiles.forEach(function (cubeTile) {
+                    const deltaX = cursorX - cubeTile.x;
+                    const deltaY = cursorY - cubeTile.y;
+                    const distance = Math.hypot(deltaX, deltaY);
+                    const influence = Math.max(0, 1 - distance / 260);
+                    const normalizedX = Math.max(-1, Math.min(1, deltaX / 180));
+                    const normalizedY = Math.max(-1, Math.min(1, deltaY / 180));
+                    const rotateX = -normalizedY * 14 * influence;
+                    const rotateY = normalizedX * 14 * influence;
+                    const rotateZ = normalizedX * normalizedY * 6 * influence;
+                    const lift = 10 * influence;
+
+                    cubeTile.element.style.setProperty('--cube-rotate-x', String(rotateX) + 'deg');
+                    cubeTile.element.style.setProperty('--cube-rotate-y', String(rotateY) + 'deg');
+                    cubeTile.element.style.setProperty('--cube-rotate-z', String(rotateZ) + 'deg');
+                    cubeTile.element.style.setProperty('--cube-lift', String(lift) + 'px');
+                });
+            }
+
+            function resetCubeTilt() {
+                if (cubeTiles.length === 0) {
+                    return;
+                }
+
+                cubeTiles.forEach(function (cubeTile) {
+                    cubeTile.element.style.setProperty('--cube-rotate-x', '0deg');
+                    cubeTile.element.style.setProperty('--cube-rotate-y', '0deg');
+                    cubeTile.element.style.setProperty('--cube-rotate-z', '0deg');
+                    cubeTile.element.style.setProperty('--cube-lift', '0px');
+                });
             }
 
             function togglePhotos(event) {
@@ -214,10 +294,19 @@
                 emailCardClose.addEventListener('click', closeEmailCard);
             }
 
+            if (parallaxOne) {
+                buildCubeOverlay();
+                parallaxOne.addEventListener('mousemove', updateCubeTilt);
+                parallaxOne.addEventListener('mouseleave', resetCubeTilt);
+            }
+
+            window.addEventListener('resize', buildCubeOverlay);
+
             photosToggles.forEach(function (toggleButton) {
                 toggleButton.addEventListener('click', togglePhotos);
             });
 
+            resetCubeTilt();
             updateParallax();
         });
     </script>
