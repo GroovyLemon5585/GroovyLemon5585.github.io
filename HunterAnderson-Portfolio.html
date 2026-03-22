@@ -84,12 +84,23 @@
     </div>
 
     <div class="parallax-section" id="parallax-2">
+        <div class="line-overlay" id="line-overlay" aria-hidden="true"></div>
         <div class="parallax-content">
             <h2>Unreal Engine Scene</h2>
             <p>This project was for my GIMM 270 class. This project involved me creating a 3D scene using Unreal Engine. all assets
                 that were used are premade assets that I found, or created using Unreal Engine. This project was meant to help learn how to make
                 environments using unreal engine, how to model, texture, use lighting, and how to create terrain.
             </p>
+            <br>
+            <p> I learned the basics of texturing, creating blueprints and the process of creating the building blocks of a level before adding detail.
+                Additionally, learning how to create a camera, and creating the path for the camera.
+            </p>
+            <div class="project-video-wrapper">
+                <video id="parallax-2-video" class="project-video" controls preload="metadata">
+                    <source src="../../GIMM%20270/Video/Final_sequence.mp4" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
         </div>
     </div>
 
@@ -134,12 +145,19 @@
             const photosToggles = document.querySelectorAll('.photos-toggle');
             const portfolioGalleries = document.querySelectorAll('.portfolio-gallery');
             const parallaxOne = document.getElementById('parallax-1');
+            const parallaxTwo = document.getElementById('parallax-2');
             const cubeOverlay = document.getElementById('cube-overlay');
+            const lineOverlay = document.getElementById('line-overlay');
             let cubeTiles = [];
             let activeCubeTiles = [];
             let cubeGridMetrics = null;
             let cubeAnimationFrame = null;
             let pendingCursorPosition = null;
+            let lineTiles = [];
+            let activeLineTiles = [];
+            let lineMetrics = null;
+            let lineAnimationFrame = null;
+            let pendingLineCursorPosition = null;
 
             function updateParallax() {
                 const scrollY = window.pageYOffset;
@@ -256,6 +274,51 @@
                 activeCubeTiles = [];
             }
 
+            function buildLineOverlay() {
+                if (!parallaxTwo || !lineOverlay) {
+                    return;
+                }
+
+                const width = parallaxTwo.clientWidth;
+                const height = parallaxTwo.clientHeight;
+                const lineWidth = Math.max(18, Math.min(28, Math.round(width / 50)));
+                const lineHeight = Math.max(180, Math.min(260, Math.round(height * 0.34)));
+                const gap = 26;
+                const stepX = lineWidth + gap;
+                const count = width >= lineWidth ? Math.max(1, Math.floor((width - lineWidth) / stepX) + 1) : 1;
+                const rowWidth = lineWidth + (count - 1) * stepX;
+                const startX = Math.max(0, Math.floor((width - rowWidth) / 2));
+                const startY = Math.max(0, Math.floor((height - lineHeight) / 2));
+                const tiles = [];
+                let markup = '';
+
+                for (let index = 0; index < count; index += 1) {
+                    const x = startX + index * stepX;
+                    tiles.push({ x: x, y: startY, index: index });
+                    markup += '<div class="line-tile" style="--line-width: ' + lineWidth + 'px; --line-height: ' + lineHeight + 'px; --line-x: ' + x + 'px; --line-y: ' + startY + 'px; --line-rotate-x: 0deg; --line-rotate-y: 0deg; --line-rotate-z: 0deg; --line-lift: 0px;"></div>';
+                }
+
+                lineOverlay.innerHTML = markup;
+                lineMetrics = {
+                    lineWidth: lineWidth,
+                    lineHeight: lineHeight,
+                    startX: startX,
+                    startY: startY,
+                    stepX: stepX,
+                    count: count,
+                    influenceRadius: 240
+                };
+                lineTiles = Array.from(lineOverlay.querySelectorAll('.line-tile')).map(function (tile, index) {
+                    return {
+                        element: tile,
+                        x: tiles[index].x + lineWidth / 2,
+                        y: tiles[index].y + lineHeight / 2,
+                        index: tiles[index].index
+                    };
+                });
+                activeLineTiles = [];
+            }
+
             function applyCubeTilt(cursorX, cursorY) {
                 if (!cubeGridMetrics || cubeTiles.length === 0) {
                     return;
@@ -356,6 +419,98 @@
                 activeCubeTiles = [];
             }
 
+            function applyLineTilt(cursorX, cursorY) {
+                if (!lineMetrics || lineTiles.length === 0) {
+                    return;
+                }
+
+                const influenceRadius = lineMetrics.influenceRadius;
+                const nextActiveLineTiles = [];
+
+                activeLineTiles.forEach(function (lineTile) {
+                    lineTile.element.style.setProperty('--line-rotate-x', '0deg');
+                    lineTile.element.style.setProperty('--line-rotate-y', '0deg');
+                    lineTile.element.style.setProperty('--line-rotate-z', '0deg');
+                    lineTile.element.style.setProperty('--line-lift', '0px');
+                });
+
+                lineTiles.forEach(function (lineTile) {
+                    const deltaX = cursorX - lineTile.x;
+                    const deltaY = cursorY - lineTile.y;
+                    const distance = Math.hypot(deltaX, deltaY);
+                    const influence = Math.max(0, 1 - distance / influenceRadius);
+
+                    if (influence <= 0) {
+                        return;
+                    }
+
+                    const normalizedX = Math.max(-1, Math.min(1, deltaX / 160));
+                    const normalizedY = Math.max(-1, Math.min(1, deltaY / 220));
+                    const rotateX = -normalizedY * 10 * influence;
+                    const rotateY = normalizedX * 18 * influence;
+                    const rotateZ = normalizedX * 8 * influence;
+                    const lift = 12 * influence;
+
+                    lineTile.element.style.setProperty('--line-rotate-x', String(rotateX) + 'deg');
+                    lineTile.element.style.setProperty('--line-rotate-y', String(rotateY) + 'deg');
+                    lineTile.element.style.setProperty('--line-rotate-z', String(rotateZ) + 'deg');
+                    lineTile.element.style.setProperty('--line-lift', String(lift) + 'px');
+                    nextActiveLineTiles.push(lineTile);
+                });
+
+                activeLineTiles = nextActiveLineTiles;
+            }
+
+            function flushLineTilt() {
+                lineAnimationFrame = null;
+
+                if (!pendingLineCursorPosition) {
+                    return;
+                }
+
+                applyLineTilt(pendingLineCursorPosition.x, pendingLineCursorPosition.y);
+            }
+
+            function updateLineTilt(event) {
+                if (!parallaxTwo || lineTiles.length === 0) {
+                    return;
+                }
+
+                const bounds = parallaxTwo.getBoundingClientRect();
+                pendingLineCursorPosition = {
+                    x: event.clientX - bounds.left,
+                    y: event.clientY - bounds.top
+                };
+
+                if (lineAnimationFrame !== null) {
+                    return;
+                }
+
+                lineAnimationFrame = window.requestAnimationFrame(flushLineTilt);
+            }
+
+            function resetLineTilt() {
+                pendingLineCursorPosition = null;
+
+                if (lineAnimationFrame !== null) {
+                    window.cancelAnimationFrame(lineAnimationFrame);
+                    lineAnimationFrame = null;
+                }
+
+                if (activeLineTiles.length === 0) {
+                    return;
+                }
+
+                activeLineTiles.forEach(function (lineTile) {
+                    lineTile.element.style.setProperty('--line-rotate-x', '0deg');
+                    lineTile.element.style.setProperty('--line-rotate-y', '0deg');
+                    lineTile.element.style.setProperty('--line-rotate-z', '0deg');
+                    lineTile.element.style.setProperty('--line-lift', '0px');
+                });
+
+                activeLineTiles = [];
+            }
+
             function togglePhotos(event) {
                 const toggleButton = event.currentTarget;
 
@@ -404,13 +559,23 @@
                 parallaxOne.addEventListener('mouseleave', resetCubeTilt);
             }
 
-            window.addEventListener('resize', buildCubeOverlay);
+            if (parallaxTwo) {
+                buildLineOverlay();
+                parallaxTwo.addEventListener('mousemove', updateLineTilt);
+                parallaxTwo.addEventListener('mouseleave', resetLineTilt);
+            }
+
+            window.addEventListener('resize', function () {
+                buildCubeOverlay();
+                buildLineOverlay();
+            });
 
             photosToggles.forEach(function (toggleButton) {
                 toggleButton.addEventListener('click', togglePhotos);
             });
 
             resetCubeTilt();
+            resetLineTilt();
             updateParallax();
         });
     </script>
