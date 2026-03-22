@@ -38,7 +38,8 @@
         To use real images, replace the background-image in Portfolio_Stylesheet.css:
             background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/your-image.jpg');
     -->
-    <div class="parallax-section" id="parallax-1">
+    <div class="parallax-section" id="parallax-1" data-parallax-depth="0.18" data-content-depth="0.045" data-mouse-depth="26" data-content-mouse-depth="10">
+        <div class="parallax-layer" aria-hidden="true"></div>
         <div class="cube-overlay" id="cube-overlay" aria-hidden="true"></div>
         <div class="parallax-content portfolio-gallery-card">
             <h2>ChatGPT Terrarium Form Webpage.</h2>
@@ -83,7 +84,8 @@
         </div>
     </div>
 
-    <div class="parallax-section" id="parallax-2">
+    <div class="parallax-section" id="parallax-2" data-parallax-depth="0.15" data-content-depth="0.035" data-mouse-depth="22" data-content-mouse-depth="8">
+        <div class="parallax-layer" aria-hidden="true"></div>
         <div class="line-overlay" id="line-overlay" aria-hidden="true"></div>
         <div class="parallax-content">
             <h2>Unreal Engine Scene</h2>
@@ -104,7 +106,8 @@
         </div>
     </div>
 
-    <div class="parallax-section" id="parallax-3">
+    <div class="parallax-section" id="parallax-3" data-parallax-depth="0.12" data-content-depth="0.03" data-mouse-depth="18" data-content-mouse-depth="6">
+        <div class="parallax-layer" aria-hidden="true"></div>
         <div class="parallax-content">
             <h2>Skills &amp; Experience</h2>
             <p>Placeholder — list your skills here.</p>
@@ -160,12 +163,51 @@
             let pendingLineCursorPosition = null;
 
             function updateParallax() {
-                const scrollY = window.pageYOffset;
                 sections.forEach(function (section) {
-                    const sectionTop = section.offsetTop;
-                    const offset = (scrollY - sectionTop) * 0.4;
-                    section.style.backgroundPositionY = 'calc(50% + ' + offset + 'px)';
+                    const rect = section.getBoundingClientRect();
+                    const viewportCenter = window.innerHeight / 2;
+                    const sectionCenter = rect.top + rect.height / 2;
+                    const normalizedDistance = Math.max(-1.25, Math.min(1.25, (sectionCenter - viewportCenter) / window.innerHeight));
+                    const parallaxDepth = Number(section.getAttribute('data-parallax-depth')) || 0.14;
+                    const contentDepth = Number(section.getAttribute('data-content-depth')) || 0.035;
+                    const backgroundShift = Math.round(-normalizedDistance * window.innerHeight * parallaxDepth);
+                    const contentShift = Math.round(normalizedDistance * window.innerHeight * contentDepth);
+
+                    section.style.setProperty('--parallax-scroll-y', String(backgroundShift) + 'px');
+                    section.style.setProperty('--content-scroll-y', String(contentShift) + 'px');
                 });
+            }
+
+            function updateSectionParallaxMouse(event) {
+                const section = event.currentTarget;
+
+                if (!section) {
+                    return;
+                }
+
+                const bounds = section.getBoundingClientRect();
+                const normalizedX = (event.clientX - bounds.left) / bounds.width - 0.5;
+                const normalizedY = (event.clientY - bounds.top) / bounds.height - 0.5;
+                const mouseDepth = Number(section.getAttribute('data-mouse-depth')) || 20;
+                const contentMouseDepth = Number(section.getAttribute('data-content-mouse-depth')) || 8;
+
+                section.style.setProperty('--parallax-mouse-x', String(Math.round(normalizedX * mouseDepth)) + 'px');
+                section.style.setProperty('--parallax-mouse-y', String(Math.round(normalizedY * mouseDepth)) + 'px');
+                section.style.setProperty('--content-mouse-x', String(Math.round(-normalizedX * contentMouseDepth)) + 'px');
+                section.style.setProperty('--content-mouse-y', String(Math.round(-normalizedY * contentMouseDepth)) + 'px');
+            }
+
+            function resetSectionParallaxMouse(event) {
+                const section = event.currentTarget;
+
+                if (!section) {
+                    return;
+                }
+
+                section.style.setProperty('--parallax-mouse-x', '0px');
+                section.style.setProperty('--parallax-mouse-y', '0px');
+                section.style.setProperty('--content-mouse-x', '0px');
+                section.style.setProperty('--content-mouse-y', '0px');
             }
 
             function resetScrollIndicatorTimer() {
@@ -568,10 +610,16 @@
             window.addEventListener('resize', function () {
                 buildCubeOverlay();
                 buildLineOverlay();
+                updateParallax();
             });
 
             photosToggles.forEach(function (toggleButton) {
                 toggleButton.addEventListener('click', togglePhotos);
+            });
+
+            sections.forEach(function (section) {
+                section.addEventListener('mousemove', updateSectionParallaxMouse);
+                section.addEventListener('mouseleave', resetSectionParallaxMouse);
             });
 
             resetCubeTilt();

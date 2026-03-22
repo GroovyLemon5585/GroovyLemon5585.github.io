@@ -18,8 +18,7 @@ body {
     z-index: 2;
 }
 
-#cover::before,
-#cover::after {
+#cover::before {
     content: "";
     position: absolute;
     left: 0;
@@ -32,10 +31,6 @@ body {
 
 #cover::before {
     top: 0;
-}
-
-#cover::after {
-    bottom: 0;
 }
 
 .cover-content {
@@ -121,30 +116,58 @@ body {
      linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('images/photo.jpg')
    ──────────────────────────────────────────────────────────────────────────── */
 .parallax-section {
+    --parallax-scroll-y: 0px;
+    --parallax-mouse-x: 0px;
+    --parallax-mouse-y: 0px;
+    --content-scroll-y: 0px;
+    --content-mouse-x: 0px;
+    --content-mouse-y: 0px;
     position: relative;
+    isolation: isolate;
     z-index: 0;
     height: 100vh;
-    background-size: cover;
-    background-position: center 50%;  /* JS updates the Y value on scroll */
-    background-repeat: no-repeat;
+    overflow: hidden;
+    background-color: #050709;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
+.parallax-layer {
+    position: absolute;
+    inset: -8%;
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    transform:
+        translate3d(
+            var(--parallax-mouse-x),
+            calc(var(--parallax-scroll-y) + var(--parallax-mouse-y)),
+            0
+        )
+        scale(1.12);
+    transform-origin: center center;
+    transition: transform 160ms linear;
+    will-change: transform;
+    z-index: 0;
+}
+
 #parallax-1 {
     position: relative;
     overflow: hidden;
+}
+
+#parallax-1 .parallax-layer {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    linear-gradient(135deg, #2b0a12 0%, #7a1f2b 50%, #d46a2a 100%);
+        linear-gradient(135deg, #2b0a12 0%, #7a1f2b 50%, #d46a2a 100%);
 }
 
 .cube-overlay {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: 2;
     opacity: 0.16;
     perspective: 900px;
     transform-style: preserve-3d;
@@ -154,7 +177,7 @@ body {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    z-index: 0;
+    z-index: 2;
     opacity: 0.14;
     perspective: 900px;
     transform-style: preserve-3d;
@@ -236,12 +259,12 @@ body {
 
 #parallax-1 > .parallax-content {
     position: relative;
-    z-index: 1;
+    z-index: 3;
 }
 
 #parallax-2 > .parallax-content {
     position: relative;
-    z-index: 1;
+    z-index: 3;
 }
 
 #parallax-1.gallery-open {
@@ -251,16 +274,16 @@ body {
     padding: 70px 0;
 }
 
-#parallax-2 {
+#parallax-2 .parallax-layer {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
         linear-gradient(135deg, #013414 0%, #40713e 50%, #1e9c13 100%);
 }
 
-#parallax-3 {
+#parallax-3 .parallax-layer {
     background-image:
         linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    linear-gradient(135deg, #16163a 0%, #303f9f 50%, #6a4fbf 100%);
+        linear-gradient(135deg, #16163a 0%, #303f9f 50%, #6a4fbf 100%);
 }
 
 /* Content card inside each parallax section */
@@ -272,6 +295,15 @@ body {
     border-radius: 8px;
     backdrop-filter: blur(6px);
     max-width: 640px;
+    position: relative;
+    z-index: 3;
+    transform: translate3d(
+        var(--content-mouse-x),
+        calc(var(--content-scroll-y) + var(--content-mouse-y)),
+        0
+    );
+    transition: transform 160ms linear;
+    will-change: transform;
 }
 
 .parallax-content h2 {
@@ -400,22 +432,20 @@ body {
     left: 0;
     width: 100%;
     z-index: 1;
-    background-color: #a9b8c7;
-    background-image:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(113, 139, 168, 0.22)),
-        linear-gradient(90deg, #72879d 0%, #d8e4ef 18%, #96a9bc 36%, #edf6ff 52%, #a6bacd 68%, #d2deea 84%, #6d8297 100%);
+    background-color: #000;
+    background-image: none;
     padding: 15px 0;
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 30px;
-    border-top: 1px solid rgba(255, 255, 255, 0.65);
-    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.35);
 }
 
 /* Footer icon styling */
 .footer-icon {
-    color: #203247;
+    color: #ffffff;
     text-decoration: none;
     transition: all 0.3s ease;
     display: flex;
@@ -424,7 +454,7 @@ body {
 }
 
 .footer-icon:hover {
-    color: #0d6fb0;
+    color: #d9d9d9;
     transform: scale(1.1);
 }
 
@@ -434,10 +464,10 @@ body {
 }
 
 .footer-contact-text {
-    color: #203247;
+    color: #ffffff;
     font-size: 0.95rem;
     letter-spacing: 0.03em;
-    text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
+    text-shadow: none;
 }
 
 .email-card {
