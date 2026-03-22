@@ -107,7 +107,7 @@ body {
 
 #parallax-1.gallery-open {
     height: auto;
-    min-height: 180vh;
+    min-height: 280vh;
     align-items: flex-start;
     padding: 70px 0;
 }
@@ -150,7 +150,9 @@ body {
 }
 
 .portfolio-gallery-card {
-    width: min(2200px, 99vw);
+    width: min(2600px, 100vw);
+    max-width: min(2600px, 100vw);
+    padding: 40px 24px;
 }
 
 .portfolio-gallery-card h2 {
@@ -187,11 +189,17 @@ body {
 
 .portfolio-image {
     width: 100%;
-    aspect-ratio: 4 / 3;
+    height: clamp(520px, 72vh, 980px);
     object-fit: cover;
     border-radius: 0;
     border: 1px solid rgba(236, 240, 241, 0.25);
     box-shadow: 0 8px 22px rgba(0, 0, 0, 0.3);
+}
+
+/* Port5: reduce crop slightly and favor left side visibility */
+.portfolio-gallery .portfolio-image:nth-child(5) {
+    height: clamp(460px, 64vh, 860px);
+    object-position: left center;
 }
 
 @media (max-width: 900px) {
@@ -206,12 +214,16 @@ body {
     }
 
     #parallax-1.gallery-open {
-        min-height: 120vh;
+        min-height: 170vh;
         padding: 26px 0;
     }
 
     .portfolio-gallery-card {
         padding: 26px 20px;
+    }
+
+    .portfolio-image {
+        height: auto;
     }
 }
 
