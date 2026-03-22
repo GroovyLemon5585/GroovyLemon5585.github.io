@@ -129,6 +129,10 @@
             const parallaxOne = document.getElementById('parallax-1');
             const cubeOverlay = document.getElementById('cube-overlay');
             let cubeTiles = [];
+            let activeCubeTiles = [];
+            let cubeGridMetrics = null;
+            let cubeAnimationFrame = null;
+            let pendingCursorPosition = null;
 
             function updateParallax() {
                 const scrollY = window.pageYOffset;
@@ -197,46 +201,87 @@
 
                 const width = parallaxOne.clientWidth;
                 const height = parallaxOne.clientHeight;
-                const cubeSize = Math.max(38, Math.min(56, Math.round(width / 24)));
+                const baseCubeSize = Math.max(38, Math.min(56, Math.round(width / 24)));
+                const cubeSize = baseCubeSize * 2;
                 const gap = 30;
                 const stepX = cubeSize + gap;
                 const stepY = cubeSize + gap;
-                const startX = -cubeSize;
-                const startY = -cubeSize;
+                const columnCount = width >= cubeSize ? Math.floor((width - cubeSize) / stepX) + 1 : 0;
+                const rowCount = height >= cubeSize ? Math.floor((height - cubeSize) / stepY) + 1 : 0;
+                const gridWidth = columnCount > 0 ? cubeSize + (columnCount - 1) * stepX : 0;
+                const gridHeight = rowCount > 0 ? cubeSize + (rowCount - 1) * stepY : 0;
+                const startX = Math.max(0, Math.floor((width - gridWidth) / 2));
+                const startY = Math.max(0, Math.floor((height - gridHeight) / 2));
                 const tiles = [];
                 let markup = '';
 
-                for (let y = startY; y < height + cubeSize * 2; y += stepY) {
-                    for (let x = startX; x < width + cubeSize * 2; x += stepX) {
-                        tiles.push({ x: x, y: y });
+                for (let row = 0; row < rowCount; row += 1) {
+                    const y = startY + row * stepY;
+
+                    for (let column = 0; column < columnCount; column += 1) {
+                        const x = startX + column * stepX;
+                        tiles.push({ x: x, y: y, row: row, column: column });
                         markup += '<div class="cube-tile" style="--cube-size: ' + cubeSize + 'px; --cube-x: ' + x + 'px; --cube-y: ' + y + 'px; --cube-rotate-x: 0deg; --cube-rotate-y: 0deg; --cube-rotate-z: 0deg; --cube-lift: 0px;"></div>';
                     }
                 }
 
                 cubeOverlay.innerHTML = markup;
+                cubeGridMetrics = {
+                    cubeSize: cubeSize,
+                    gap: gap,
+                    stepX: stepX,
+                    stepY: stepY,
+                    startX: startX,
+                    startY: startY,
+                    columnCount: columnCount,
+                    rowCount: rowCount,
+                    influenceRadius: 260
+                };
                 cubeTiles = Array.from(cubeOverlay.querySelectorAll('.cube-tile')).map(function (tile, index) {
                     return {
                         element: tile,
                         x: tiles[index].x + cubeSize / 2,
-                        y: tiles[index].y + cubeSize / 2
+                        y: tiles[index].y + cubeSize / 2,
+                        row: tiles[index].row,
+                        column: tiles[index].column
                     };
                 });
+                activeCubeTiles = [];
             }
 
-            function updateCubeTilt(event) {
-                if (!parallaxOne || cubeTiles.length === 0) {
+            function applyCubeTilt(cursorX, cursorY) {
+                if (!cubeGridMetrics || cubeTiles.length === 0) {
                     return;
                 }
 
-                const bounds = parallaxOne.getBoundingClientRect();
-                const cursorX = event.clientX - bounds.left;
-                const cursorY = event.clientY - bounds.top;
+                const influenceRadius = cubeGridMetrics.influenceRadius;
+                const minColumn = Math.max(0, Math.floor((cursorX - influenceRadius - cubeGridMetrics.startX) / cubeGridMetrics.stepX));
+                const maxColumn = Math.min(cubeGridMetrics.columnCount - 1, Math.ceil((cursorX + influenceRadius - cubeGridMetrics.startX) / cubeGridMetrics.stepX));
+                const minRow = Math.max(0, Math.floor((cursorY - influenceRadius - cubeGridMetrics.startY) / cubeGridMetrics.stepY));
+                const maxRow = Math.ceil((cursorY + influenceRadius - cubeGridMetrics.startY) / cubeGridMetrics.stepY);
+                const nextActiveCubeTiles = [];
+
+                activeCubeTiles.forEach(function (cubeTile) {
+                    cubeTile.element.style.setProperty('--cube-rotate-x', '0deg');
+                    cubeTile.element.style.setProperty('--cube-rotate-y', '0deg');
+                    cubeTile.element.style.setProperty('--cube-rotate-z', '0deg');
+                    cubeTile.element.style.setProperty('--cube-lift', '0px');
+                });
 
                 cubeTiles.forEach(function (cubeTile) {
+                    if (cubeTile.column < minColumn || cubeTile.column > maxColumn || cubeTile.row < minRow || cubeTile.row > maxRow) {
+                        return;
+                    }
+
                     const deltaX = cursorX - cubeTile.x;
                     const deltaY = cursorY - cubeTile.y;
                     const distance = Math.hypot(deltaX, deltaY);
-                    const influence = Math.max(0, 1 - distance / 260);
+                    const influence = Math.max(0, 1 - distance / influenceRadius);
+
+                    if (influence <= 0) {
+                        return;
+                    }
+
                     const normalizedX = Math.max(-1, Math.min(1, deltaX / 180));
                     const normalizedY = Math.max(-1, Math.min(1, deltaY / 180));
                     const rotateX = -normalizedY * 14 * influence;
@@ -248,20 +293,60 @@
                     cubeTile.element.style.setProperty('--cube-rotate-y', String(rotateY) + 'deg');
                     cubeTile.element.style.setProperty('--cube-rotate-z', String(rotateZ) + 'deg');
                     cubeTile.element.style.setProperty('--cube-lift', String(lift) + 'px');
+                    nextActiveCubeTiles.push(cubeTile);
                 });
+
+                activeCubeTiles = nextActiveCubeTiles;
             }
 
-            function resetCubeTilt() {
-                if (cubeTiles.length === 0) {
+            function flushCubeTilt() {
+                cubeAnimationFrame = null;
+
+                if (!pendingCursorPosition) {
                     return;
                 }
 
-                cubeTiles.forEach(function (cubeTile) {
+                applyCubeTilt(pendingCursorPosition.x, pendingCursorPosition.y);
+            }
+
+            function updateCubeTilt(event) {
+                if (!parallaxOne || cubeTiles.length === 0) {
+                    return;
+                }
+
+                const bounds = parallaxOne.getBoundingClientRect();
+                pendingCursorPosition = {
+                    x: event.clientX - bounds.left,
+                    y: event.clientY - bounds.top
+                };
+
+                if (cubeAnimationFrame !== null) {
+                    return;
+                }
+
+                cubeAnimationFrame = window.requestAnimationFrame(flushCubeTilt);
+            }
+
+            function resetCubeTilt() {
+                pendingCursorPosition = null;
+
+                if (cubeAnimationFrame !== null) {
+                    window.cancelAnimationFrame(cubeAnimationFrame);
+                    cubeAnimationFrame = null;
+                }
+
+                if (activeCubeTiles.length === 0) {
+                    return;
+                }
+
+                activeCubeTiles.forEach(function (cubeTile) {
                     cubeTile.element.style.setProperty('--cube-rotate-x', '0deg');
                     cubeTile.element.style.setProperty('--cube-rotate-y', '0deg');
                     cubeTile.element.style.setProperty('--cube-rotate-z', '0deg');
                     cubeTile.element.style.setProperty('--cube-lift', '0px');
                 });
+
+                activeCubeTiles = [];
             }
 
             function togglePhotos(event) {
@@ -278,8 +363,20 @@
                     return;
                 }
 
-                const isHidden = targetGallery.classList.toggle('is-hidden');
-                toggleButton.setAttribute('aria-expanded', String(!isHidden));
+                const isCurrentlyHidden = targetGallery.classList.contains('is-hidden');
+
+                portfolioGalleries.forEach(function (gallery) {
+                    gallery.classList.add('is-hidden');
+                });
+
+                photosToggles.forEach(function (button) {
+                    button.setAttribute('aria-expanded', 'false');
+                });
+
+                if (isCurrentlyHidden) {
+                    targetGallery.classList.remove('is-hidden');
+                    toggleButton.setAttribute('aria-expanded', 'true');
+                }
 
                 updateParallaxGalleryState();
             }
