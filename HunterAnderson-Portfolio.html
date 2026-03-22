@@ -19,7 +19,7 @@
     <!-- Foreground cover — visible on page load, scrolls away to reveal parallax -->
     <section id="cover">
         <div class="cover-content">
-            <h1>Hunter Anderson's Portfolio</h1>
+            <h1>Hunter Anderson</h1>
             <p class="cover-subtitle">Game Developer &amp; Artist</p>
             <p class="cover-intro">My name is Hunter Anderson, and I am currently a student in the GIMM program at Boise
                 State University, in the College of Arts &amp; Sciences, and I am an aspiring environment artist. This
@@ -40,15 +40,39 @@
     <div class="parallax-section" id="parallax-1">
         <div class="parallax-content portfolio-gallery-card">
             <h2>ChatGPT Terrarium Form Webpage.</h2>
-            <button type="button" class="photos-toggle" id="photos-toggle" aria-expanded="false" aria-controls="portfolio-gallery">
-                Photos
-            </button>
-            <div class="portfolio-gallery is-hidden" id="portfolio-gallery" aria-label="Terrarium form screenshots">
+            <br>
+            <p> This project was for my GIMM 260 class. The goal of the project was to create a google form page, the page would then take 
+                the users answers and apply them to a premade prompt. The prompt would then be sent to ChatGPT, and then the response to the prompt 
+                would be sent back to and dislayed on the webpage. Additionally we had to create a security page in order to keep users from
+                tampering with the answers that could be given to the prompt, and to prevent the prompt itself from being tampered with.
+            </p>
+            <div class="photos-toggle-group">
+                <button type="button" class="photos-toggle" aria-expanded="false" aria-controls="portfolio-gallery-1" data-gallery-target="portfolio-gallery-1">
+                    Main Page Code
+                </button>
+                <button type="button" class="photos-toggle" aria-expanded="false" aria-controls="portfolio-gallery-2" data-gallery-target="portfolio-gallery-2">
+                    Security Code
+                </button>
+                <button type="button" class="photos-toggle" aria-expanded="false" aria-controls="portfolio-gallery-3" data-gallery-target="portfolio-gallery-3">
+                    Website Design
+                </button>
+            </div>
+            <div class="portfolio-gallery is-hidden" id="portfolio-gallery-1" aria-label="Terrarium form screenshots set 1">
                 <img src="images/port1.png" alt="Terrarium form screenshot 1" class="portfolio-image">
                 <img src="images/port2.png" alt="Terrarium form screenshot 2" class="portfolio-image">
                 <img src="images/port3.png" alt="Terrarium form screenshot 3" class="portfolio-image">
                 <img src="images/port4.png" alt="Terrarium form screenshot 4" class="portfolio-image">
                 <img src="images/port5.png" alt="Terrarium form screenshot 5" class="portfolio-image">
+            </div>
+            <div class="portfolio-gallery is-hidden" id="portfolio-gallery-2" aria-label="Terrarium form screenshots set 2">
+                <img src="images/port2-1.png" alt="Terrarium form screenshot set 2 image 1" class="portfolio-image">
+                <img src="images/port2-2.png" alt="Terrarium form screenshot set 2 image 2" class="portfolio-image">
+                <img src="images/port2-3.png" alt="Terrarium form screenshot set 2 image 3" class="portfolio-image">
+            </div>
+            <div class="portfolio-gallery is-hidden" id="portfolio-gallery-3" aria-label="Terrarium form screenshots set 3">
+                <img src="images/port3-1.png" alt="Terrarium form screenshot set 3 image 1" class="portfolio-image">
+                <img src="images/port3-2.png" alt="Terrarium form screenshot set 3 image 2" class="portfolio-image">
+                <img src="images/port3-3.png" alt="Terrarium form screenshot set 3 image 3" class="portfolio-image">
             </div>
         </div>
     </div>
@@ -68,6 +92,7 @@
     </div>
 
     <footer class="footer-bar">
+        <span class="footer-contact-text" aria-hidden="true">Contact info:</span>
         <a href="#" class="footer-icon" id="gmail-trigger" title="Gmail" aria-label="Open email card">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                 <path
@@ -97,8 +122,8 @@
             const gmailTrigger = document.getElementById('gmail-trigger');
             const emailCard = document.getElementById('email-card');
             const emailCardClose = document.getElementById('email-card-close');
-            const photosToggle = document.getElementById('photos-toggle');
-            const portfolioGallery = document.getElementById('portfolio-gallery');
+            const photosToggles = document.querySelectorAll('.photos-toggle');
+            const portfolioGalleries = document.querySelectorAll('.portfolio-gallery');
             const parallaxOne = document.getElementById('parallax-1');
 
             function updateParallax() {
@@ -147,17 +172,36 @@
                 emailCard.setAttribute('aria-hidden', 'true');
             }
 
-            function togglePhotos() {
-                if (!portfolioGallery || !photosToggle) {
+            function updateParallaxGalleryState() {
+                if (!parallaxOne) {
                     return;
                 }
 
-                const isHidden = portfolioGallery.classList.toggle('is-hidden');
-                photosToggle.setAttribute('aria-expanded', String(!isHidden));
+                const hasVisibleGallery = Array.from(portfolioGalleries).some(function (gallery) {
+                    return !gallery.classList.contains('is-hidden');
+                });
 
-                if (parallaxOne) {
-                    parallaxOne.classList.toggle('gallery-open', !isHidden);
+                parallaxOne.classList.toggle('gallery-open', hasVisibleGallery);
+            }
+
+            function togglePhotos(event) {
+                const toggleButton = event.currentTarget;
+
+                if (!toggleButton) {
+                    return;
                 }
+
+                const galleryTarget = toggleButton.getAttribute('data-gallery-target');
+                const targetGallery = galleryTarget ? document.getElementById(galleryTarget) : null;
+
+                if (!targetGallery) {
+                    return;
+                }
+
+                const isHidden = targetGallery.classList.toggle('is-hidden');
+                toggleButton.setAttribute('aria-expanded', String(!isHidden));
+
+                updateParallaxGalleryState();
             }
 
             window.addEventListener('scroll', handleScroll, { passive: true });
@@ -170,9 +214,9 @@
                 emailCardClose.addEventListener('click', closeEmailCard);
             }
 
-            if (photosToggle) {
-                photosToggle.addEventListener('click', togglePhotos);
-            }
+            photosToggles.forEach(function (toggleButton) {
+                toggleButton.addEventListener('click', togglePhotos);
+            });
 
             updateParallax();
         });
