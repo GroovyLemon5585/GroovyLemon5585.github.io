@@ -306,6 +306,13 @@ body {
     padding: 70px 0;
 }
 
+#parallax-2.gallery-open {
+    height: auto;
+    min-height: 220vh;
+    align-items: flex-start;
+    padding: 70px 0;
+}
+
 #parallax-3.gallery-open {
     height: auto;
     min-height: 240vh;
@@ -379,6 +386,7 @@ body {
 }
 
 #parallax-1.gallery-open .portfolio-gallery-card,
+#parallax-2.gallery-open .portfolio-gallery-card,
 #parallax-3.gallery-open .portfolio-gallery-card {
     width: min(2600px, 100vw);
     max-width: min(2600px, 100vw);
@@ -456,12 +464,18 @@ body {
         padding: 26px 0;
     }
 
+    #parallax-2.gallery-open {
+        min-height: 170vh;
+        padding: 26px 0;
+    }
+
     #parallax-3.gallery-open {
         min-height: 170vh;
         padding: 26px 0;
     }
 
     #parallax-1.gallery-open .portfolio-gallery-card,
+    #parallax-2.gallery-open .portfolio-gallery-card,
     #parallax-3.gallery-open .portfolio-gallery-card {
         padding: 26px 20px;
     }

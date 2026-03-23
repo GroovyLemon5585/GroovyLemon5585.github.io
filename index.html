@@ -95,7 +95,7 @@
     <div class="parallax-section" id="parallax-2" data-parallax-depth="0.15" data-content-depth="0.035" data-mouse-depth="22" data-content-mouse-depth="8">
         <div class="parallax-layer" aria-hidden="true"></div>
         <div class="line-overlay" id="line-overlay" aria-hidden="true"></div>
-        <div class="parallax-content">
+        <div class="parallax-content portfolio-gallery-card">
             <h2>Unreal Engine Scene</h2>
             <p>This project was for my GIMM 270 class. This project involved me creating a 3D scene using Unreal Engine. all assets
                 that were used are premade assets that I found, or created using Unreal Engine. This project was meant to help learn how to make
@@ -105,11 +105,14 @@
             <p> I learned the basics of texturing, creating blueprints and the process of creating the building blocks of a level before adding detail.
                 Additionally, learning how to create a camera, and creating the path for the camera.
             </p>
-            <div class="project-video-wrapper">
-                <video id="parallax-2-video" class="project-video" controls preload="metadata">
-                    <source src="videos/Final_sequence.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+            <div class="photos-toggle-group">
+                <button type="button" class="photos-toggle" aria-expanded="false" aria-controls="parallax-2-scenes" data-gallery-target="parallax-2-scenes">
+                    Scene Images
+                </button>
+            </div>
+            <div class="portfolio-gallery is-hidden" id="parallax-2-scenes" aria-label="Unreal Engine scene images">
+                <img src="images/port4.png" alt="Unreal Engine scene image 1" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port5.png" alt="Unreal Engine scene image 2" class="portfolio-image" loading="lazy" decoding="async">
             </div>
         </div>
     </div>
@@ -377,12 +380,16 @@
             }
 
             function updateParallaxGalleryState() {
-                if (!parallaxOne && !parallaxThree) {
+                if (!parallaxOne && !parallaxTwo && !parallaxThree) {
                     return;
                 }
 
                 if (parallaxOne) {
                     parallaxOne.classList.toggle('gallery-open', hasVisibleGallery(parallaxOne));
+                }
+
+                if (parallaxTwo) {
+                    parallaxTwo.classList.toggle('gallery-open', hasVisibleGallery(parallaxTwo));
                 }
 
                 if (parallaxThree) {
