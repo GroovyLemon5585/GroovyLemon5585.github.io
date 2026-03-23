@@ -23,7 +23,7 @@ body {
     position: absolute;
     left: 0;
     width: 100%;
-    height: 200px;
+    height: 225px;
     background-color: #000;
     pointer-events: none;
     z-index: 3;
@@ -72,12 +72,18 @@ body {
 }
 
 .cover-nav-button:hover {
-    background: rgba(236, 240, 241, 0.14);
+    background: rgba(13, 110, 253, 0.82);
+    border-color: rgba(13, 110, 253, 0.96);
+    color: #f8fbff;
     transform: translateY(-1px);
 }
 
-.cover-nav-button:focus {
-    color: #ecf0f1;
+.cover-nav-button:focus,
+.cover-nav-button:focus-visible,
+.cover-nav-button:active {
+    background: rgba(13, 110, 253, 0.82);
+    border-color: rgba(13, 110, 253, 0.96);
+    color: #f8fbff;
 }
 
 .cover-content {
@@ -85,7 +91,7 @@ body {
     color: #ecf0f1;
     margin: 5px;
     width: min(100%, 760px);
-    padding: 200px 24px 88px;
+    padding: 225px 24px 88px;
     box-sizing: border-box;
 }
 
@@ -124,7 +130,7 @@ body {
 
 @media (max-width: 991.98px) {
     #cover::before {
-        height: 250px;
+        height: 275px;
     }
 
     .cover-top-nav {
@@ -146,7 +152,7 @@ body {
     }
 
     .cover-content {
-        padding-top: 250px;
+        padding-top: 275px;
         padding-bottom: 96px;
     }
 
@@ -171,7 +177,7 @@ body {
 
 @media (max-width: 640px) {
     #cover::before {
-        height: 320px;
+        height: 345px;
     }
 
     .cover-top-nav {
@@ -194,7 +200,7 @@ body {
 
     .cover-content {
         width: 100%;
-        padding: 320px 18px 96px;
+        padding: 345px 18px 96px;
     }
 
     .cover-content h1 {
