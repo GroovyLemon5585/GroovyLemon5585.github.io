@@ -4,6 +4,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name='viewport' content='width=device-width, initial-scale=1' />
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
     <link rel="stylesheet" href="Portfolio_Stylesheet.css">
     <title>Hunter Anderson's Portfolio</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
@@ -26,7 +28,7 @@
         </div>
         <div class="cover-content">
             <h1>Hunter Anderson</h1>
-            <img src="images/hunter-headshot.png" alt="Photo of Hunter Anderson" class="cover-headshot">
+            <img src="images/hunter-headshot.png" alt="Photo of Hunter Anderson" class="cover-headshot" loading="eager" decoding="async" fetchpriority="high">
             <p class="cover-subtitle">Game Developer &amp; Artist</p>
             <p class="cover-intro">My name is Hunter Anderson, and I am currently a student in the GIMM program at Boise
                 State University, in the College of Arts &amp; Sciences, and I am an aspiring environment artist. This
@@ -71,21 +73,21 @@
                 </button>
             </div>
             <div class="portfolio-gallery is-hidden" id="portfolio-gallery-1" aria-label="Terrarium form screenshots set 1">
-                <img src="images/port1.png" alt="Terrarium form screenshot 1" class="portfolio-image">
-                <img src="images/port2.png" alt="Terrarium form screenshot 2" class="portfolio-image">
-                <img src="images/port3.png" alt="Terrarium form screenshot 3" class="portfolio-image">
-                <img src="images/port4.png" alt="Terrarium form screenshot 4" class="portfolio-image">
-                <img src="images/port5.png" alt="Terrarium form screenshot 5" class="portfolio-image">
+                <img src="images/port1.png" alt="Terrarium form screenshot 1" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port2.png" alt="Terrarium form screenshot 2" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port3.png" alt="Terrarium form screenshot 3" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port4.png" alt="Terrarium form screenshot 4" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port5.png" alt="Terrarium form screenshot 5" class="portfolio-image" loading="lazy" decoding="async">
             </div>
             <div class="portfolio-gallery is-hidden" id="portfolio-gallery-2" aria-label="Terrarium form screenshots set 2">
-                <img src="images/port2-1.png" alt="Terrarium form screenshot set 2 image 1" class="portfolio-image">
-                <img src="images/port2-2.png" alt="Terrarium form screenshot set 2 image 2" class="portfolio-image">
-                <img src="images/port2-3.png" alt="Terrarium form screenshot set 2 image 3" class="portfolio-image">
+                <img src="images/port2-1.png" alt="Terrarium form screenshot set 2 image 1" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port2-2.png" alt="Terrarium form screenshot set 2 image 2" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port2-3.png" alt="Terrarium form screenshot set 2 image 3" class="portfolio-image" loading="lazy" decoding="async">
             </div>
             <div class="portfolio-gallery is-hidden" id="portfolio-gallery-3" aria-label="Terrarium form screenshots set 3">
-                <img src="images/port3-1.png" alt="Terrarium form screenshot set 3 image 1" class="portfolio-image">
-                <img src="images/port3-2.png" alt="Terrarium form screenshot set 3 image 2" class="portfolio-image">
-                <img src="images/port3-3.png" alt="Terrarium form screenshot set 3 image 3" class="portfolio-image">
+                <img src="images/port3-1.png" alt="Terrarium form screenshot set 3 image 1" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port3-2.png" alt="Terrarium form screenshot set 3 image 2" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="images/port3-3.png" alt="Terrarium form screenshot set 3 image 3" class="portfolio-image" loading="lazy" decoding="async">
             </div>
         </div>
     </div>
@@ -145,13 +147,13 @@
                 </div>
             </div>
             <div class="portfolio-gallery is-hidden" id="parallax-3-layout" aria-label="Game layout images">
-                <img src="../portfolio%20pics/port4-1.png" alt="Game layout overview" class="portfolio-image">
-                <img src="../portfolio%20pics/port4-2.png" alt="Game layout close-up" class="portfolio-image">
+                <img src="../portfolio%20pics/port4-1.png" alt="Game layout overview" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="../portfolio%20pics/port4-2.png" alt="Game layout close-up" class="portfolio-image" loading="lazy" decoding="async">
             </div>
             <div class="portfolio-gallery is-hidden" id="parallax-3-coding" aria-label="Coding example images">
-                <img src="../portfolio%20pics/port5-1.png" alt="Coding example image 1" class="portfolio-image">
-                <img src="../portfolio%20pics/port5-2.png" alt="Coding example image 2" class="portfolio-image">
-                <img src="../portfolio%20pics/port5-3.png" alt="Coding example image 3" class="portfolio-image">
+                <img src="../portfolio%20pics/port5-1.png" alt="Coding example image 1" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="../portfolio%20pics/port5-2.png" alt="Coding example image 2" class="portfolio-image" loading="lazy" decoding="async">
+                <img src="../portfolio%20pics/port5-3.png" alt="Coding example image 3" class="portfolio-image" loading="lazy" decoding="async">
             </div>
         </div>
     </div>
@@ -228,6 +230,25 @@
             let lineMetrics = null;
             let lineAnimationFrame = null;
             let pendingLineCursorPosition = null;
+            let parallaxScrollAnimationFrame = null;
+            let resizeDebounceTimer = null;
+            const sectionStyleCache = new WeakMap();
+
+            function setSectionVar(section, variableName, value) {
+                let cachedValues = sectionStyleCache.get(section);
+
+                if (!cachedValues) {
+                    cachedValues = Object.create(null);
+                    sectionStyleCache.set(section, cachedValues);
+                }
+
+                if (cachedValues[variableName] === value) {
+                    return;
+                }
+
+                section.style.setProperty(variableName, value);
+                cachedValues[variableName] = value;
+            }
 
             function updateParallax() {
                 sections.forEach(function (section) {
@@ -240,8 +261,8 @@
                     const backgroundShift = Math.round(-normalizedDistance * window.innerHeight * parallaxDepth);
                     const contentShift = Math.round(normalizedDistance * window.innerHeight * contentDepth);
 
-                    section.style.setProperty('--parallax-scroll-y', String(backgroundShift) + 'px');
-                    section.style.setProperty('--content-scroll-y', String(contentShift) + 'px');
+                    setSectionVar(section, '--parallax-scroll-y', String(backgroundShift) + 'px');
+                    setSectionVar(section, '--content-scroll-y', String(contentShift) + 'px');
                 });
             }
 
@@ -258,10 +279,10 @@
                 const mouseDepth = Number(section.getAttribute('data-mouse-depth')) || 20;
                 const contentMouseDepth = Number(section.getAttribute('data-content-mouse-depth')) || 8;
 
-                section.style.setProperty('--parallax-mouse-x', String(Math.round(normalizedX * mouseDepth)) + 'px');
-                section.style.setProperty('--parallax-mouse-y', String(Math.round(normalizedY * mouseDepth)) + 'px');
-                section.style.setProperty('--content-mouse-x', String(Math.round(-normalizedX * contentMouseDepth)) + 'px');
-                section.style.setProperty('--content-mouse-y', String(Math.round(-normalizedY * contentMouseDepth)) + 'px');
+                setSectionVar(section, '--parallax-mouse-x', String(Math.round(normalizedX * mouseDepth)) + 'px');
+                setSectionVar(section, '--parallax-mouse-y', String(Math.round(normalizedY * mouseDepth)) + 'px');
+                setSectionVar(section, '--content-mouse-x', String(Math.round(-normalizedX * contentMouseDepth)) + 'px');
+                setSectionVar(section, '--content-mouse-y', String(Math.round(-normalizedY * contentMouseDepth)) + 'px');
             }
 
             function resetSectionParallaxMouse(event) {
@@ -271,10 +292,10 @@
                     return;
                 }
 
-                section.style.setProperty('--parallax-mouse-x', '0px');
-                section.style.setProperty('--parallax-mouse-y', '0px');
-                section.style.setProperty('--content-mouse-x', '0px');
-                section.style.setProperty('--content-mouse-y', '0px');
+                setSectionVar(section, '--parallax-mouse-x', '0px');
+                setSectionVar(section, '--parallax-mouse-y', '0px');
+                setSectionVar(section, '--content-mouse-x', '0px');
+                setSectionVar(section, '--content-mouse-y', '0px');
             }
 
             function scrollToSection(event) {
@@ -307,58 +328,55 @@
             }
 
             function handleScroll() {
-                updateParallax();
+                if (parallaxScrollAnimationFrame === null) {
+                    parallaxScrollAnimationFrame = window.requestAnimationFrame(function () {
+                        parallaxScrollAnimationFrame = null;
+                        updateParallax();
+                    });
+                }
+
                 resetScrollIndicatorTimer();
             }
 
             function openEmailCard(event) {
                 event.preventDefault();
 
-                if (!emailCard) {
-                    return;
-                }
-
-                emailCard.classList.add('is-open');
-                emailCard.setAttribute('aria-hidden', 'false');
-
-                if (phoneCard) {
-                    phoneCard.classList.remove('is-open');
-                    phoneCard.setAttribute('aria-hidden', 'true');
-                }
+                setCardState(emailCard, true);
+                setCardState(phoneCard, false);
             }
 
             function closeEmailCard() {
-                if (!emailCard) {
-                    return;
-                }
-
-                emailCard.classList.remove('is-open');
-                emailCard.setAttribute('aria-hidden', 'true');
+                setCardState(emailCard, false);
             }
 
             function openPhoneCard(event) {
                 event.preventDefault();
 
-                if (!phoneCard) {
-                    return;
-                }
-
-                phoneCard.classList.add('is-open');
-                phoneCard.setAttribute('aria-hidden', 'false');
-
-                if (emailCard) {
-                    emailCard.classList.remove('is-open');
-                    emailCard.setAttribute('aria-hidden', 'true');
-                }
+                setCardState(phoneCard, true);
+                setCardState(emailCard, false);
             }
 
             function closePhoneCard() {
-                if (!phoneCard) {
+                setCardState(phoneCard, false);
+            }
+
+            function setCardState(card, isOpen) {
+                if (!card) {
                     return;
                 }
 
-                phoneCard.classList.remove('is-open');
-                phoneCard.setAttribute('aria-hidden', 'true');
+                card.classList.toggle('is-open', isOpen);
+                card.setAttribute('aria-hidden', isOpen ? 'false' : 'true');
+            }
+
+            function hasVisibleGallery(section) {
+                if (!section) {
+                    return false;
+                }
+
+                return Array.from(section.querySelectorAll('.portfolio-gallery')).some(function (gallery) {
+                    return !gallery.classList.contains('is-hidden');
+                });
             }
 
             function updateParallaxGalleryState() {
@@ -367,21 +385,11 @@
                 }
 
                 if (parallaxOne) {
-                    const parallaxOneGalleries = parallaxOne.querySelectorAll('.portfolio-gallery');
-                    const hasVisibleParallaxOneGallery = Array.from(parallaxOneGalleries).some(function (gallery) {
-                        return !gallery.classList.contains('is-hidden');
-                    });
-
-                    parallaxOne.classList.toggle('gallery-open', hasVisibleParallaxOneGallery);
+                    parallaxOne.classList.toggle('gallery-open', hasVisibleGallery(parallaxOne));
                 }
 
                 if (parallaxThree) {
-                    const parallaxThreeGalleries = parallaxThree.querySelectorAll('.portfolio-gallery');
-                    const hasVisibleParallaxThreeGallery = Array.from(parallaxThreeGalleries).some(function (gallery) {
-                        return !gallery.classList.contains('is-hidden');
-                    });
-
-                    parallaxThree.classList.toggle('gallery-open', hasVisibleParallaxThreeGallery);
+                    parallaxThree.classList.toggle('gallery-open', hasVisibleGallery(parallaxThree));
                 }
 
                 window.requestAnimationFrame(buildCubeOverlay);
@@ -389,13 +397,13 @@
                 updateParallax();
             }
 
-            function buildCubeOverlay() {
-                if (!parallaxOne || !cubeOverlay) {
-                    return;
+            function buildCubeOverlayForSection(section, overlay) {
+                if (!section || !overlay) {
+                    return { metrics: null, tiles: [] };
                 }
 
-                const width = parallaxOne.clientWidth;
-                const height = parallaxOne.clientHeight;
+                const width = section.clientWidth;
+                const height = section.clientHeight;
                 const baseCubeSize = Math.max(38, Math.min(56, Math.round(width / 24)));
                 const cubeSize = baseCubeSize * 2;
                 const gap = 30;
@@ -422,19 +430,9 @@
                     }
                 }
 
-                cubeOverlay.innerHTML = markup;
-                cubeGridMetrics = {
-                    cubeSize: cubeSize,
-                    gap: gap,
-                    stepX: stepX,
-                    stepY: stepY,
-                    startX: startX,
-                    startY: startY,
-                    columnCount: columnCount,
-                    rowCount: rowCount,
-                    influenceRadius: 260
-                };
-                cubeTiles = Array.from(cubeOverlay.querySelectorAll('.cube-tile')).map(function (tile, index) {
+                overlay.innerHTML = markup;
+
+                const mappedTiles = Array.from(overlay.querySelectorAll('.cube-tile')).map(function (tile, index) {
                     return {
                         element: tile,
                         x: tiles[index].x + cubeSize / 2,
@@ -443,6 +441,31 @@
                         column: tiles[index].column
                     };
                 });
+
+                return {
+                    metrics: {
+                        cubeSize: cubeSize,
+                        gap: gap,
+                        stepX: stepX,
+                        stepY: stepY,
+                        startX: startX,
+                        startY: startY,
+                        columnCount: columnCount,
+                        rowCount: rowCount,
+                        influenceRadius: 260
+                    },
+                    tiles: mappedTiles
+                };
+            }
+
+            function buildCubeOverlay() {
+                if (!parallaxOne || !cubeOverlay) {
+                    return;
+                }
+
+                const overlayState = buildCubeOverlayForSection(parallaxOne, cubeOverlay);
+                cubeGridMetrics = overlayState.metrics;
+                cubeTiles = overlayState.tiles;
                 activeCubeTiles = [];
             }
 
@@ -451,56 +474,64 @@
                     return;
                 }
 
-                const width = parallaxThree.clientWidth;
-                const height = parallaxThree.clientHeight;
-                const baseCubeSize = Math.max(38, Math.min(56, Math.round(width / 24)));
-                const cubeSize = baseCubeSize * 2;
-                const gap = 30;
-                const stepX = cubeSize + gap;
-                const stepY = cubeSize + gap;
-                const columnCount = width >= cubeSize ? Math.floor((width - cubeSize) / stepX) + 1 : 0;
-                const rowCount = height >= cubeSize ? Math.floor((height - cubeSize) / stepY) + 1 : 0;
-                const gridWidth = columnCount > 0 ? cubeSize + (columnCount - 1) * stepX : 0;
-                const gridHeight = rowCount > 0 ? cubeSize + (rowCount - 1) * stepY : 0;
-                const startX = Math.max(0, Math.floor((width - gridWidth) / 2));
-                const startY = Math.max(0, Math.floor((height - gridHeight) / 2));
-                const firstRenderableRow = rowCount > 2 ? 1 : 0;
-                const lastRenderableRow = rowCount > 2 ? rowCount - 1 : rowCount;
-                const tiles = [];
-                let markup = '';
+                const overlayState = buildCubeOverlayForSection(parallaxThree, cubeOverlayThree);
+                cubeGridMetricsThree = overlayState.metrics;
+                cubeTilesThree = overlayState.tiles;
+                activeCubeTilesThree = [];
+            }
 
-                for (let row = firstRenderableRow; row < lastRenderableRow; row += 1) {
-                    const y = startY + row * stepY;
+            function resetCubeTileTransform(cubeTileElement) {
+                cubeTileElement.style.setProperty('--cube-rotate-x', '0deg');
+                cubeTileElement.style.setProperty('--cube-rotate-y', '0deg');
+                cubeTileElement.style.setProperty('--cube-rotate-z', '0deg');
+                cubeTileElement.style.setProperty('--cube-lift', '0px');
+            }
 
-                    for (let column = 0; column < columnCount; column += 1) {
-                        const x = startX + column * stepX;
-                        tiles.push({ x: x, y: y, row: row, column: column });
-                        markup += '<div class="cube-tile" style="--cube-size: ' + cubeSize + 'px; --cube-x: ' + x + 'px; --cube-y: ' + y + 'px; --cube-rotate-x: 0deg; --cube-rotate-y: 0deg; --cube-rotate-z: 0deg; --cube-lift: 0px;"></div>';
-                    }
+            function applyCubeTiltForState(cubeState, cursorX, cursorY) {
+                if (!cubeState.metrics || cubeState.tiles.length === 0) {
+                    return cubeState.activeTiles;
                 }
 
-                cubeOverlayThree.innerHTML = markup;
-                cubeGridMetricsThree = {
-                    cubeSize: cubeSize,
-                    gap: gap,
-                    stepX: stepX,
-                    stepY: stepY,
-                    startX: startX,
-                    startY: startY,
-                    columnCount: columnCount,
-                    rowCount: rowCount,
-                    influenceRadius: 260
-                };
-                cubeTilesThree = Array.from(cubeOverlayThree.querySelectorAll('.cube-tile')).map(function (tile, index) {
-                    return {
-                        element: tile,
-                        x: tiles[index].x + cubeSize / 2,
-                        y: tiles[index].y + cubeSize / 2,
-                        row: tiles[index].row,
-                        column: tiles[index].column
-                    };
+                const influenceRadius = cubeState.metrics.influenceRadius;
+                const minColumn = Math.max(0, Math.floor((cursorX - influenceRadius - cubeState.metrics.startX) / cubeState.metrics.stepX));
+                const maxColumn = Math.min(cubeState.metrics.columnCount - 1, Math.ceil((cursorX + influenceRadius - cubeState.metrics.startX) / cubeState.metrics.stepX));
+                const minRow = Math.max(0, Math.floor((cursorY - influenceRadius - cubeState.metrics.startY) / cubeState.metrics.stepY));
+                const maxRow = Math.ceil((cursorY + influenceRadius - cubeState.metrics.startY) / cubeState.metrics.stepY);
+                const nextActiveCubeTiles = [];
+
+                cubeState.activeTiles.forEach(function (cubeTile) {
+                    resetCubeTileTransform(cubeTile.element);
                 });
-                activeCubeTilesThree = [];
+
+                cubeState.tiles.forEach(function (cubeTile) {
+                    if (cubeTile.column < minColumn || cubeTile.column > maxColumn || cubeTile.row < minRow || cubeTile.row > maxRow) {
+                        return;
+                    }
+
+                    const deltaX = cursorX - cubeTile.x;
+                    const deltaY = cursorY - cubeTile.y;
+                    const distance = Math.hypot(deltaX, deltaY);
+                    const influence = Math.max(0, 1 - distance / influenceRadius);
+
+                    if (influence <= 0) {
+                        return;
+                    }
+
+                    const normalizedX = Math.max(-1, Math.min(1, deltaX / 180));
+                    const normalizedY = Math.max(-1, Math.min(1, deltaY / 180));
+                    const rotateX = -normalizedY * 14 * influence;
+                    const rotateY = normalizedX * 14 * influence;
+                    const rotateZ = normalizedX * normalizedY * 6 * influence;
+                    const lift = 10 * influence;
+
+                    cubeTile.element.style.setProperty('--cube-rotate-x', String(rotateX) + 'deg');
+                    cubeTile.element.style.setProperty('--cube-rotate-y', String(rotateY) + 'deg');
+                    cubeTile.element.style.setProperty('--cube-rotate-z', String(rotateZ) + 'deg');
+                    cubeTile.element.style.setProperty('--cube-lift', String(lift) + 'px');
+                    nextActiveCubeTiles.push(cubeTile);
+                });
+
+                return nextActiveCubeTiles;
             }
 
             function buildLineOverlay() {
@@ -549,53 +580,11 @@
             }
 
             function applyCubeTilt(cursorX, cursorY) {
-                if (!cubeGridMetrics || cubeTiles.length === 0) {
-                    return;
-                }
-
-                const influenceRadius = cubeGridMetrics.influenceRadius;
-                const minColumn = Math.max(0, Math.floor((cursorX - influenceRadius - cubeGridMetrics.startX) / cubeGridMetrics.stepX));
-                const maxColumn = Math.min(cubeGridMetrics.columnCount - 1, Math.ceil((cursorX + influenceRadius - cubeGridMetrics.startX) / cubeGridMetrics.stepX));
-                const minRow = Math.max(0, Math.floor((cursorY - influenceRadius - cubeGridMetrics.startY) / cubeGridMetrics.stepY));
-                const maxRow = Math.ceil((cursorY + influenceRadius - cubeGridMetrics.startY) / cubeGridMetrics.stepY);
-                const nextActiveCubeTiles = [];
-
-                activeCubeTiles.forEach(function (cubeTile) {
-                    cubeTile.element.style.setProperty('--cube-rotate-x', '0deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-y', '0deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-z', '0deg');
-                    cubeTile.element.style.setProperty('--cube-lift', '0px');
-                });
-
-                cubeTiles.forEach(function (cubeTile) {
-                    if (cubeTile.column < minColumn || cubeTile.column > maxColumn || cubeTile.row < minRow || cubeTile.row > maxRow) {
-                        return;
-                    }
-
-                    const deltaX = cursorX - cubeTile.x;
-                    const deltaY = cursorY - cubeTile.y;
-                    const distance = Math.hypot(deltaX, deltaY);
-                    const influence = Math.max(0, 1 - distance / influenceRadius);
-
-                    if (influence <= 0) {
-                        return;
-                    }
-
-                    const normalizedX = Math.max(-1, Math.min(1, deltaX / 180));
-                    const normalizedY = Math.max(-1, Math.min(1, deltaY / 180));
-                    const rotateX = -normalizedY * 14 * influence;
-                    const rotateY = normalizedX * 14 * influence;
-                    const rotateZ = normalizedX * normalizedY * 6 * influence;
-                    const lift = 10 * influence;
-
-                    cubeTile.element.style.setProperty('--cube-rotate-x', String(rotateX) + 'deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-y', String(rotateY) + 'deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-z', String(rotateZ) + 'deg');
-                    cubeTile.element.style.setProperty('--cube-lift', String(lift) + 'px');
-                    nextActiveCubeTiles.push(cubeTile);
-                });
-
-                activeCubeTiles = nextActiveCubeTiles;
+                activeCubeTiles = applyCubeTiltForState({
+                    metrics: cubeGridMetrics,
+                    tiles: cubeTiles,
+                    activeTiles: activeCubeTiles
+                }, cursorX, cursorY);
             }
 
             function flushCubeTilt() {
@@ -639,63 +628,18 @@
                 }
 
                 activeCubeTiles.forEach(function (cubeTile) {
-                    cubeTile.element.style.setProperty('--cube-rotate-x', '0deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-y', '0deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-z', '0deg');
-                    cubeTile.element.style.setProperty('--cube-lift', '0px');
+                    resetCubeTileTransform(cubeTile.element);
                 });
 
                 activeCubeTiles = [];
             }
 
             function applyCubeTiltThree(cursorX, cursorY) {
-                if (!cubeGridMetricsThree || cubeTilesThree.length === 0) {
-                    return;
-                }
-
-                const influenceRadius = cubeGridMetricsThree.influenceRadius;
-                const minColumn = Math.max(0, Math.floor((cursorX - influenceRadius - cubeGridMetricsThree.startX) / cubeGridMetricsThree.stepX));
-                const maxColumn = Math.min(cubeGridMetricsThree.columnCount - 1, Math.ceil((cursorX + influenceRadius - cubeGridMetricsThree.startX) / cubeGridMetricsThree.stepX));
-                const minRow = Math.max(0, Math.floor((cursorY - influenceRadius - cubeGridMetricsThree.startY) / cubeGridMetricsThree.stepY));
-                const maxRow = Math.ceil((cursorY + influenceRadius - cubeGridMetricsThree.startY) / cubeGridMetricsThree.stepY);
-                const nextActiveCubeTiles = [];
-
-                activeCubeTilesThree.forEach(function (cubeTile) {
-                    cubeTile.element.style.setProperty('--cube-rotate-x', '0deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-y', '0deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-z', '0deg');
-                    cubeTile.element.style.setProperty('--cube-lift', '0px');
-                });
-
-                cubeTilesThree.forEach(function (cubeTile) {
-                    if (cubeTile.column < minColumn || cubeTile.column > maxColumn || cubeTile.row < minRow || cubeTile.row > maxRow) {
-                        return;
-                    }
-
-                    const deltaX = cursorX - cubeTile.x;
-                    const deltaY = cursorY - cubeTile.y;
-                    const distance = Math.hypot(deltaX, deltaY);
-                    const influence = Math.max(0, 1 - distance / influenceRadius);
-
-                    if (influence <= 0) {
-                        return;
-                    }
-
-                    const normalizedX = Math.max(-1, Math.min(1, deltaX / 180));
-                    const normalizedY = Math.max(-1, Math.min(1, deltaY / 180));
-                    const rotateX = -normalizedY * 14 * influence;
-                    const rotateY = normalizedX * 14 * influence;
-                    const rotateZ = normalizedX * normalizedY * 6 * influence;
-                    const lift = 10 * influence;
-
-                    cubeTile.element.style.setProperty('--cube-rotate-x', String(rotateX) + 'deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-y', String(rotateY) + 'deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-z', String(rotateZ) + 'deg');
-                    cubeTile.element.style.setProperty('--cube-lift', String(lift) + 'px');
-                    nextActiveCubeTiles.push(cubeTile);
-                });
-
-                activeCubeTilesThree = nextActiveCubeTiles;
+                activeCubeTilesThree = applyCubeTiltForState({
+                    metrics: cubeGridMetricsThree,
+                    tiles: cubeTilesThree,
+                    activeTiles: activeCubeTilesThree
+                }, cursorX, cursorY);
             }
 
             function flushCubeTiltThree() {
@@ -739,10 +683,7 @@
                 }
 
                 activeCubeTilesThree.forEach(function (cubeTile) {
-                    cubeTile.element.style.setProperty('--cube-rotate-x', '0deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-y', '0deg');
-                    cubeTile.element.style.setProperty('--cube-rotate-z', '0deg');
-                    cubeTile.element.style.setProperty('--cube-lift', '0px');
+                    resetCubeTileTransform(cubeTile.element);
                 });
 
                 activeCubeTilesThree = [];
@@ -925,10 +866,13 @@
             }
 
             window.addEventListener('resize', function () {
-                buildCubeOverlay();
-                buildCubeOverlayThree();
-                buildLineOverlay();
-                updateParallax();
+                clearTimeout(resizeDebounceTimer);
+                resizeDebounceTimer = window.setTimeout(function () {
+                    buildCubeOverlay();
+                    buildCubeOverlayThree();
+                    buildLineOverlay();
+                    updateParallax();
+                }, 120);
             });
 
             photosToggles.forEach(function (toggleButton) {
