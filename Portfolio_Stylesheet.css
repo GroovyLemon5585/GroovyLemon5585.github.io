@@ -78,12 +78,18 @@ body {
     transform: translateY(-1px);
 }
 
-.cover-nav-button:focus,
-.cover-nav-button:focus-visible,
 .cover-nav-button:active {
     background: rgba(13, 110, 253, 0.82);
     border-color: rgba(13, 110, 253, 0.96);
     color: #f8fbff;
+}
+
+.cover-nav-button:focus,
+.cover-nav-button:focus-visible {
+    background: rgba(13, 17, 23, 0.72);
+    border-color: rgba(236, 240, 241, 0.45);
+    color: #ecf0f1;
+    box-shadow: none;
 }
 
 .cover-content {
