@@ -308,7 +308,7 @@ body {
 
 #parallax-2.gallery-open {
     height: auto;
-    min-height: 220vh;
+    min-height: 280vh;
     align-items: flex-start;
     padding: 70px 0;
 }
@@ -465,7 +465,7 @@ body {
     }
 
     #parallax-2.gallery-open {
-        min-height: 170vh;
+        min-height: 210vh;
         padding: 26px 0;
     }
 
