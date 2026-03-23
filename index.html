@@ -21,12 +21,16 @@
 
     <!-- Foreground cover — visible on page load, scrolls away to reveal parallax -->
     <section id="cover">
-        <div class="cover-top-nav" aria-label="Project section navigation">
-            <button type="button" class="cover-nav-button" data-scroll-target="parallax-1">ChatGPT Terrarium</button>
-            <button type="button" class="cover-nav-button" data-scroll-target="parallax-2">Unreal Engine Scene</button>
-            <button type="button" class="cover-nav-button" data-scroll-target="parallax-3">Platformer Project</button>
-            <button type="button" class="cover-nav-button" data-scroll-target="parallax-4">Biography</button>
-        </div>
+        <nav class="cover-top-nav navbar navbar-dark" aria-label="Project section navigation">
+            <div class="container-fluid justify-content-center">
+                <div class="navbar-nav cover-nav-links">
+                    <button type="button" class="nav-link btn btn-outline-light cover-nav-button" data-scroll-target="parallax-1">ChatGPT Terrarium</button>
+                    <button type="button" class="nav-link btn btn-outline-light cover-nav-button" data-scroll-target="parallax-2">Unreal Engine Scene</button>
+                    <button type="button" class="nav-link btn btn-outline-light cover-nav-button" data-scroll-target="parallax-3">Platformer Project</button>
+                    <button type="button" class="nav-link btn btn-outline-light cover-nav-button" data-scroll-target="parallax-4">Biography</button>
+                </div>
+            </div>
+        </nav>
         <div class="cover-content">
             <h1>Hunter Anderson</h1>
             <img src="images/hunter-headshot.png" alt="Photo of Hunter Anderson" class="cover-headshot" loading="eager" decoding="async" fetchpriority="high">
